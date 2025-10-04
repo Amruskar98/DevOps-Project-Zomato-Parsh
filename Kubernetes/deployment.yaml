@@ -15,7 +15,7 @@ spec:
         app: zomato
     spec:
       containers:
-      - name: zomato
-        image: kastrov/zomato:latest
+      - name: zomato4
+        image: ramparsh/zomato4:latest
         ports:
         - containerPort: 3000
