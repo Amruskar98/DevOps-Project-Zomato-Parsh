@@ -1,0 +1,177 @@
+🧩 1. Create a dedicated user for Prometheus
+sudo useradd --system --no-create-home --shell /bin/false prometheus
+ 
+🌐 2. Download Prometheus
+wget https://github.com/prometheus/prometheus/releases/download/v2.47.1/prometheus-2.47.1.linux-amd64.ta…
+ 
+📦 3. Extract and move files
+tar -xvf prometheus-2.47.1.linux-amd64.tar.gz
+cd prometheus-2.47.1.linux-amd64/
+ 
+📂 4. Create directories
+sudo mkdir -p /data /etc/prometheus
+ 
+🚚 5. Move Prometheus binaries and configuration
+sudo mv prometheus promtool /usr/local/bin/
+sudo mv consoles /etc/prometheus/
+sudo mv console_libraries /etc/prometheus/
+sudo mv prometheus.yml /etc/prometheus/prometheus.yml
+ 
+🔐 6. Set ownership
+sudo chown -R prometheus:prometheus /etc/prometheus/ /data/
+ 
+⚙️ 7. Create Prometheus systemd service
+sudo vi /etc/systemd/system/prometheus.service
+ 
+ 
+Then add the following content inside the file:
+ 
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+ 
+StartLimitIntervalSec=500
+StartLimitBurst=5
+ 
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+Restart=on-failure
+RestartSec=5
+ExecStart=/usr/local/bin/prometheus \
+  --config.file=/etc/prometheus/prometheus.yml \
+  --storage.tsdb.path=/data \
+  --web.console.templates=/etc/prometheus/consoles \
+  --web.console.libraries=/etc/prometheus/console_libraries \
+  --web.listen-address=0.0.0.0:9090 \
+  --web.enable-lifecycle
+ 
+[Install]
+WantedBy=multi-user.target
+ 
+▶️ 8. Start and enable Prometheus
+sudo systemctl daemon-reload
+sudo systemctl enable prometheus
+sudo systemctl start Prometheus
+sudo systemctl status prometheus
+
+ 
+ 
+✅ Access Prometheus UI:
+Open your browser and go to:
+👉 http://localhost:9090
+ 
+ 
+ 
+installing node:
+ 
+ 
+15.3. Installing Node Exporter
+cd
+You are in path now
+Create a system user for Node Exporter and download Node Exporter:
+sudo useradd --system --no-create-home --shell /bin/false node_exporter
+wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd6…
+Extract Node Exporter files, move the binary, and clean up:
+tar -xvf node_exporter-1.6.1.linux-amd64.tar.gz
+rm -rf node_exporter*
+Create a systemd unit configuration file for Node Exporter:
+sudo vi /etc/systemd/system/node_exporter.service
+ 
+sudo useradd --system --no-create-home --shell /bin/false node_exporter
+ 
+ 
+paste below code into the file mentioned.
+ 
+[Unit]
+Description=Node Exporter
+Wants=network-online.target
+After=network-online.target
+ 
+StartLimitIntervalSec=500
+StartLimitBurst=5
+ 
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/local/bin/node_exporter --collector.logind
+ 
+[Install]  
+WantedBy=multi-user.target
+ 
+ 
+abve script to create the jonbs inside the promethesu.yml file
+ 
+ 
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+ 
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['13.127.235.202:9100']
+ 
+  - job_name: 'jenkins'
+    metrics_path: '/prometheus'
+    static_configs:
+      - targets: ['3.111.47.9:8080']
+ 
+ 
+install
+ 
+ 
+Step 1: Install Dependencies:
+First, ensure that all necessary dependencies are installed:
+sudo apt-get update
+sudo apt-get install -y apt-transport-https software-properties-common
+ 
+ 
+ 
+wget -q -O - https://packages.grafana.com/gpg.key |sudo apt-key add -
+You should see OK when executed the above command.
+ 
+Step 3: Add Grafana Repository:
+Add the repository for Grafana stable releases:
+echo "deb https://packages.grafana.com/oss/deb stable main"| sudo tee-a /etc/apt/sources.list.d/grafana.list
+Step 4: Update and Install Grafana:
+Update the package list and install Grafana:
+sudo apt-get update
+sudo apt-get -y install grafana
+Step 5: Enable and Start Grafana Service:
+To automatically start Grafana after a reboot, enable the service:
+sudo systemctl enable grafana-server
+Start Grafana:
+sudo systemctl start grafana-server
+Step 6: Check Grafana Status:
+Verify the status of the Grafana service to ensure it's running correctly:
+sudo systemctl status grafana-server
+Kas
+K
+ 
+ 
+node exportter
+https://grafana.com/grafana/dashboards/1860-node-exporter-full/
+ 
+Jenkins dashboard link
+ 
+https://grafana.com/grafana/dashboards/9964-jenkins-performance-and-health-overview/
+ 
+ 
+iam permission
+ 
+ 
+eksctl utils associate-iam-oidc-provider \
+  --region ap-south-1 \
+  --cluster parshZomatocluster \
+  --approve
+ 
+ 
+create a node group-
+ 
+prometheus installation 
