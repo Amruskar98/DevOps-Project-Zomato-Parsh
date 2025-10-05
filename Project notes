@@ -175,3 +175,82 @@ eksctl utils associate-iam-oidc-provider \
 create a node group-
  
 prometheus installation 
+
+
+
+
+kubectl apply -n argoed -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml
+
+Kast
+
+wait for sometime till the namespace gets created.
+
+The above command will create a namespace with "argocd" name
+
+By default the argo CD server is not publicly exposed, so we need to expose it publicly. To do that, execute the below command;
+
+kubectl patch sve argocd-server-n argocd-p'{"spec": {"type": "Load Balancer"}}'
+
+After successful execution you should see "patched"
+
+To see the namespace got created or not ----> kubectl get ns ----> you will see argoed namespace
+
+To see the pods available in the argoed namespace ----> kubectl get pods -n argocd ----> you will see the pods
+
+Wait for 5 minutes for the load balancer creation. Once the loadbalancer is created, we will get the load balancer url.
+ 
+ 
+kubectl apply -n argoed -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml
+ 
+ 
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "Load Balancer"}}'
+ 
+ 
+ 
+ 
+**************
+ 
+Kubernetes promenthius insallationm
+ 
+ 
+Add the Prometheus Community Helm repository:
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+
+Create a Kubernetes namespace for the Node Exporter:
+
+kubectl create namespace prometheus-node-exporter
+
+Install the Node Exporter using Helm:
+
+helm install prometheus-node-exporter prometheus-community/prometheus-node-exporter --namespace prometheus-node-exporter
+
+Lets continue with load balancer thing of previous step; execute the below in VS code editor
+
+export ARGOCD_SERVER='kubectl get sve argocd-server -n argocd-o json | jq --raw-output '.status.load Balancer.ingress[0].hostname"
+
+Execute the below command in powershell, if the command doesn't get executed in VS Code Editor
+
+$env:ARGOCD_SERVER = $(kubectl get sve argocd-server -n argoed -o json | jq --raw-output'.status.load Balancer.ingress [0].hostname')
+
+(Ref URL: https://archive.eks workshop.com/intermediate/290_argocd/configure/)
+
+To get the loadbalancer url;
+
+echo SARGOCD SERVER
+ 
+ 
+Linux server command to
+ 
+echo $ARGOCD_SERVER
+
+ARGOCD_SERVER=$(kubectl get svc argocd-server -n argocd -o json | jq -r '.status.loadBalancer.ingress[0].hostname')
+ 
+ 
+command to get argocd password:
+ 
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+
+9cHA8ji53VmHSLMd
+
+ 
